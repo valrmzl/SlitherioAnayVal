@@ -31,6 +31,9 @@ void foodPrep(Color foods[],Vector2 positions[],int n);
 Vector2 getRandomVector2();
 Color getRandomColor();
 
+void nombreJugador(List *gusano);
+void infoJuego(List *gusano);
+
 List *newList();
 void addElement(List *list,void* value);
 void removeLastElement(List *list);
@@ -129,15 +132,22 @@ int main() {
             food(gusano,posiciones, randomCircles+i, foods[i]);
         }
 
+        nombreJugador(gusano);
+
+
 
         EndMode2D();
 
+
         DrawText("Slither.io Prueba 626", 100, 100, 40, BLACK);
         //dibujo de mapa pequeño
+
+        infoJuego(gusano);//muestra score de longitud
         DrawCircle(120,780,103,BLACK);
         DrawCircle(120,780,100,RAYWHITE);
         DrawLine(20, 780, 220, 780, BLACK);
         DrawLine(120, 680, 120, 880, BLACK);
+
 
         //NOTA: Agregar mapa que muestre donde se encuentra el gusano, usar proporciones
 
@@ -339,4 +349,16 @@ void foodPrep(Color foods[], Vector2 positions[],int n){
         foods[i]=getRandomColor();
         positions[i]=getRandomVector2();
     }
+}
+
+
+void nombreJugador(List *gusano)
+{
+    Vector2 mostrar={getPosicion(gusano, 1).x,getPosicion(gusano, 1).y};
+    DrawText("VALE",mostrar.x,mostrar.y,20,BLACK);
+}
+
+void infoJuego(List *gusano)
+{
+    DrawText(TextFormat("Score: %d", getSize(gusano)),50,640,30,RED);
 }
