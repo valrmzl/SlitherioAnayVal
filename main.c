@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "raymath.h"
 
-#define valorInicial 5
+#define valorInicial 10
 #define nFood 400
 
 typedef struct node Node;
@@ -21,8 +21,7 @@ void inicializarBloque(Vector2 initialPositions[valorInicial], List *gusano);
 void inicializarPosiciones(List *posiciones,Vector2 initialPositions[valorInicial],Vector2 pInicial);
 void updateListaP(List* posiciones, Vector2 mouse);
 Vector2 mouseMovement(Vector2 mouse, List *posiciones);
-Vector2 mouseProporcional(Vector2 n);
-//Vector2 Vector2Unitario(Vector2 n);
+Vector2 Vector2Transformacion(Vector2 n);
 void updateGusano(List *gusano,List* posiciones);
 
 
@@ -72,7 +71,7 @@ int main() {
     Vector2 initialPositions[valorInicial];
     initialPositions[0] = pInicial;
 
-    SetTargetFPS(10);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     List *posiciones = newList();
     List *gusano = newList();
@@ -122,10 +121,6 @@ int main() {
 
         DrawCircle(screenWidth/2, screenHeight/2, 2000, LIGHTGRAY);
 
-
-        DrawLine((int)camera.target.x, -screenHeight*10, (int)camera.target.x, screenHeight*10, BLACK);
-        DrawLine(-screenWidth*10, (int)camera.target.y, screenWidth*10, (int)camera.target.y, BLACK);
-
         for(int i=0;i<getSize(gusano);i++){
             DrawCircleV(getPosicion(gusano,i), getRadio(gusano,i), getColor(gusano,i));
         }
@@ -133,13 +128,16 @@ int main() {
         for(int i =0; i<nFood;i++){
             food(gusano,posiciones, randomCircles+i, foods[i]);
         }
-        printf("[%f,%f]\n",GetMousePosition().x,GetMousePosition().y);
+
 
         EndMode2D();
 
-
-
         DrawText("Slither.io Prueba 626", 100, 100, 40, BLACK);
+        //dibujo de mapa pequeño
+        DrawCircle(120,780,103,BLACK);
+        DrawCircle(120,780,100,RAYWHITE);
+        DrawLine(20, 780, 220, 780, BLACK);
+        DrawLine(120, 680, 120, 880, BLACK);
 
         //NOTA: Agregar mapa que muestre donde se encuentra el gusano, usar proporciones
 
@@ -208,10 +206,8 @@ Vector2 *newPos(float x, float y){
 }
 
 
-
-
 Vector2 getRandomVector2(){
-    Vector2 n = {GetRandomValue(-2000,2000), GetRandomValue(-2000,2000)};
+    Vector2 n = {GetRandomValue(-1100,2900), GetRandomValue(-1550,2450)};
     return n;
 }
 
@@ -310,20 +306,17 @@ void updateListaP(List* posiciones,Vector2 mouse){
 }
 
 Vector2 mouseMovement(Vector2 mouse,List *posiciones){
-    //Vector2 direction = Vector2Multiply(*((Vector2*)getElement(posiciones,0)),Vector2Unitario(mouse));
-    Vector2 direction=Vector2MoveTowards(*((Vector2*)getElement(posiciones,0)), mouseProporcional(mouse),100);
+    Vector2 direction= Vector2Add(Vector2Transformacion(mouse),*((Vector2*)getElement(posiciones,0)));
     return direction;
 }
 
-Vector2 mouseProporcional(Vector2 n){
-    Vector2 result={(n.x)*2.2,n.y*4.4};
-    return result;
+Vector2 Vector2Transformacion(Vector2 n){
+    n.x=n.x-900;
+    n.y=n.y-400;
+    Vector2 resultado = {n.x/ Vector2Length(n),n.y/ Vector2Length(n)};//calcular unitario
+    return Vector2Scale(resultado,7);
 }
 
-/*Vector2 Vector2Unitario(Vector2 n){
-    Vector2 result={n.x/Vector2Length(n),n.y/Vector2Length(n)};
-    return result;
-}*/
 void updateGusano(List *gusano,List *posiciones){
     for(int i =0; i<gusano->size;i++){
         setPosicion(gusano,i,*(Vector2*)getElement(posiciones,i));
