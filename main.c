@@ -25,14 +25,16 @@ Vector2 Vector2Transformacion(Vector2 n);
 void updateGusano(List *gusano,List* posiciones);
 
 
-void food(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor);
-void foodPrep(Color foods[],Vector2 positions[],int n);
+void gameState(List *gusano);
+void gameplayer(List *gusano);
 
-Vector2 getRandomVector2();
+void food1(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor);
+void food2(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor);
+void foodPrep(Color foods[],Vector2 positionsCentro[], Vector2 positionsAll[],int n);
+
+Vector2 getRandomPos1();
+Vector2 getRandomPos2();
 Color getRandomColor();
-
-void nombreJugador(List *gusano);
-void infoJuego(List *gusano);
 
 List *newList();
 void addElement(List *list,void* value);
@@ -66,8 +68,9 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Sliter.io -- Ana y Valeria");
 
     Color foods[nFood];
-    Vector2 randomCircles[nFood];
-    foodPrep(foods,randomCircles,nFood);
+    Vector2 randomCircles[nFood];//centro
+    Vector2 randomCircles2[nFood];//toda la pantalla
+    foodPrep(foods,randomCircles,randomCircles2,nFood);
 
 
     Vector2 pInicial = { 100.0f, 100.0f };
@@ -101,7 +104,6 @@ int main() {
         // Camera target follows player
         camera.target = (Vector2 ){getPosicion(gusano,1).x + 20.0f, getPosicion(gusano,1).y + 20.0f };
 
-
         /* NOTA: vamos a cambiar el zoom conforme el gusano crezca
         // Camera zoom controls
         camera.zoom += ((float)GetMouseWheelMove()*0.05f);
@@ -120,36 +122,29 @@ int main() {
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
+
+
         BeginMode2D(camera);
 
-        DrawCircle(screenWidth/2, screenHeight/2, 2000, LIGHTGRAY);
+        //CIRCULO DE JUEGO
+        DrawCircle(screenWidth/2, screenHeight/2, 4000, LIGHTGRAY);
 
+        //CUERPO GUSANO
         for(int i=0;i<getSize(gusano);i++){
             DrawCircleV(getPosicion(gusano,i), getRadio(gusano,i), getColor(gusano,i));
         }
 
+        //COMIDA
         for(int i =0; i<nFood;i++){
-            food(gusano,posiciones, randomCircles+i, foods[i]);
+            food1(gusano,posiciones, randomCircles+i, foods[i]);
+            food2(gusano,posiciones,randomCircles2+i,foods[i]);
         }
 
-        nombreJugador(gusano);
-
-
+        gameplayer(gusano);
 
         EndMode2D();
 
-
-        DrawText("Slither.io Prueba 626", 100, 100, 40, BLACK);
-        //dibujo de mapa pequeño
-
-        infoJuego(gusano);//muestra score de longitud
-        DrawCircle(120,780,103,BLACK);
-        DrawCircle(120,780,100,RAYWHITE);
-        DrawLine(20, 780, 220, 780, BLACK);
-        DrawLine(120, 680, 120, 880, BLACK);
-
-
-        //NOTA: Agregar mapa que muestre donde se encuentra el gusano, usar proporciones
+        gameState(gusano);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -216,15 +211,22 @@ Vector2 *newPos(float x, float y){
 }
 
 
-Vector2 getRandomVector2(){
+Vector2 getRandomPos1(){
+    Vector2 n = {GetRandomValue(-3100,4900), GetRandomValue(-3550,4450)};
+    return n;
+} //toda la pantalla
+
+Vector2 getRandomPos2(){
     Vector2 n = {GetRandomValue(-1100,2900), GetRandomValue(-1550,2450)};
     return n;
-}
+}//centro
 
 Color getRandomColor(){
     Color random1=(Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
     return random1;
 }
+
+
 
 
 
@@ -289,7 +291,6 @@ void inicializarPosiciones(List *posiciones, Vector2 initialPositions[valorInici
         initialPositions[i].y = pInicial.y + i;
         addElement(posiciones, initialPositions+i);
     }
-
 }
 
 void updateListaP(List* posiciones,Vector2 mouse){
@@ -333,32 +334,58 @@ void updateGusano(List *gusano,List *posiciones){
     }
 }
 
-void food(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor){
+
+
+
+void food1(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor){
     if(CheckCollisionCircles(getPosicion(gusano,0), getRadio(gusano,0),*randomPos,10)){
         addElement(gusano, newBloque(getColor(gusano,0),1));
         addElement(posiciones, newPos(getPosicion(gusano, 1).x,getPosicion(gusano, 1).y));
-        *randomPos=getRandomVector2();
+        *randomPos=getRandomPos2();
     }
     else{
         DrawCircleV(*randomPos,10,randomColor);
     }
 }
 
-void foodPrep(Color foods[], Vector2 positions[],int n){
+void food2(List *gusano,List *posiciones,Vector2 *randomPos, Color randomColor){
+    if(CheckCollisionCircles(getPosicion(gusano,0), getRadio(gusano,0),*randomPos,10)){
+        addElement(gusano, newBloque(getColor(gusano,0),1));
+        addElement(posiciones, newPos(getPosicion(gusano, 1).x,getPosicion(gusano, 1).y));
+        *randomPos=getRandomPos1();
+    }
+    else{
+        DrawCircleV(*randomPos,10,randomColor);
+    }
+}
+
+void foodPrep(Color foods[],Vector2 positionsCentro[], Vector2 positionsAll[],int n){
     for(int i=0;i<n;i++){
         foods[i]=getRandomColor();
-        positions[i]=getRandomVector2();
+        positionsCentro[i]=getRandomPos2();
+        positionsAll[i]=getRandomPos1();
     }
 }
 
 
-void nombreJugador(List *gusano)
-{
+void gameplayer(List *gusano){
     Vector2 mostrar={getPosicion(gusano, 1).x,getPosicion(gusano, 1).y};
     DrawText("VALE",mostrar.x,mostrar.y,20,BLACK);
 }
 
-void infoJuego(List *gusano)
+
+void gameState(List *gusano)
 {
+    //TITULO
+    DrawText("Slither.io Prueba 626", 100, 100, 40, BLACK);
+
+    //SCORE
     DrawText(TextFormat("Score: %d", getSize(gusano)),50,640,30,RED);
+
+    //MAPA
+    DrawCircle(120, 780, 103, BLACK);
+    DrawCircle(120, 780, 100, RAYWHITE);
+    DrawLine(20, 780, 220, 780, BLACK);//linea vertical
+    DrawLine(120, 680, 120, 880, BLACK);//linea horizontal
+    DrawCircle(((getPosicion(gusano,0).x)/40)+97.5,((getPosicion(gusano,0).y)/40)+768.75,5,RED);
 }
