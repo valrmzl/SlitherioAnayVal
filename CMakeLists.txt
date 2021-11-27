@@ -30,7 +30,7 @@ endif()
 
 # This is the main part:
 
-add_executable(${PROJECT_NAME} main.c)
+add_executable(${PROJECT_NAME} main.c lists.c lists.h slitherio.h slitherio.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 

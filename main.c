@@ -3,48 +3,59 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "slitherio.h"
+#include "lists.h"
 
+#define valorInicial 10
 #define nFood 400
-
-
-
+#define nGusanos 20
+#define worldSize 6000
+#define speed 7
 
 
 int main() {
     printf("Hello, World!\n");
-
     int screenWidth = 1800;
     int screenHeight = 900;
+
     InitWindow(screenWidth, screenHeight, "Sliter.io -- Ana y Valeria");
 
-    Color foods[nFood];
-    Vector2 randomCircles[nFood];//centro
-    Vector2 randomCircles2[nFood];//toda la pantalla
-    foodPrep(foods,randomCircles,randomCircles2,nFood);
 
+    Color foods[nFood];
+    Vector2 randomCirclesCentro[nFood];//centro
+    Vector2 randomCirclesTodo[nFood];//toda la pantalla
+    foodPrep(foods,randomCirclesCentro,randomCirclesTodo,nFood);
 
     Vector2 pInicial = { 100.0f, 100.0f };
     Vector2 initialPositions[valorInicial];
     initialPositions[0] = pInicial;
 
+
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
+
     List *posiciones = newList();
     List *gusano = newList();
-
     inicializarBloque(initialPositions,gusano);
     inicializarPosiciones(posiciones,initialPositions,pInicial);
 
+
+    Vector2 randomPosF[nGusanos][valorInicial];
+    List* fGusano[nGusanos];
+    List* fGusanoPos[nGusanos];
+    inicializarFakeGusanos(fGusano,fGusanoPos,randomPosF);
 
 
     Camera2D camera = { 0 };
     camera.target = (Vector2){getPosicion(gusano,1).x + 20.0f, getPosicion(gusano,1).y + 20.0f };
     camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = 0.2f;
 
-
+    Vector2 fakeGusanoPos[nGusanos];
+    for(int i=0;i<nGusanos;i++){
+        fakeGusanoPos[i]=getRandomPosTodo();
+    }
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -55,8 +66,14 @@ int main() {
         updateListaP(posiciones, mouseMovement(GetMousePosition(),posiciones));//agrega nueva posicion mouse y quita ultima
         updateGusano(gusano,posiciones);//copia lista de posiciones a posiciones de los bloques
 
+        for(int i =0; i<nGusanos;i++){
+            updateListaP(fGusanoPos[i],updatePosFakeGusano(fGusanoPos[i],&fakeGusanoPos[i]));
+            updateGusano(fGusano[i],fGusanoPos[i]);
+        }
+
+
         // Camera target follows player
-        camera.target = (Vector2 ){getPosicion(gusano,1).x + 20.0f, getPosicion(gusano,1).y + 20.0f };
+        camera.target = (Vector2 ){getPosicion(gusano,1).x , getPosicion(gusano,1).y};
 
         /* NOTA: vamos a cambiar el zoom conforme el gusano crezca
         // Camera zoom controls
@@ -74,25 +91,29 @@ int main() {
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
-
-
         BeginMode2D(camera);
 
         //CIRCULO DE JUEGO
-        DrawCircle(screenWidth/2, screenHeight/2, 4000, LIGHTGRAY);
+        DrawCircle(0, 0, worldSize+20, LIGHTGRAY);
 
         //CUERPO GUSANO
         for(int i=0;i<getSize(gusano);i++){
-            DrawCircleV(getPosicion(gusano,i), getRadio(gusano,i), getColor(gusano,i));
+            DrawCircleV(getPosicion(gusano,i), (getRadio(gusano))+2, DARKGRAY);
+            DrawCircleV(getPosicion(gusano,i), getRadio(gusano), getColor(gusano));
         }
 
-        //COMIDA
-        for(int i =0; i<nFood;i++){
-            food1(gusano,posiciones, randomCircles+i, foods[i]);
-            food2(gusano,posiciones,randomCircles2+i,foods[i]);
+        //CUERPO GUSANO FAKE
+        for(int j=0;j<nGusanos;j++){
+            for(int i=0;i<getSize(fGusano[j]);i++){
+                DrawCircleV(getPosicion(fGusano[j],i), (getRadio(fGusano[j]))+2, DARKGRAY);
+                DrawCircleV(getPosicion(fGusano[j],i), getRadio(fGusano[j]), getColor(fGusano[j]));
+            }
         }
+
+
+        //COMIDA
+        checkCollisionFood(gusano, posiciones, fGusano,fGusanoPos,randomCirclesTodo,randomCirclesCentro,foods);
 
         gameplayer(gusano);
 
