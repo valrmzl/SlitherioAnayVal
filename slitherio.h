@@ -45,5 +45,7 @@ Vector2 getRandomPosCentro();
 Color getRandomColor();
 
 
+void starScreen(int sw);
+
 
 #endif //SLITHERIO_SLITHERIO_H

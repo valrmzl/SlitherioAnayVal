@@ -10,9 +10,12 @@
 #define nGusanos 20
 #define worldSize 6000
 #define speed 7
+#define name 25
+
 
 
 int main() {
+    int play=0;
     printf("Hello, World!\n");
     int screenWidth = 1800;
     int screenHeight = 900;
@@ -91,35 +94,46 @@ int main() {
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        BeginMode2D(camera);
 
-        //CIRCULO DE JUEGO
-        DrawCircle(0, 0, worldSize+20, LIGHTGRAY);
+        starScreen(screenWidth);
 
-        //CUERPO GUSANO
-        for(int i=0;i<getSize(gusano);i++){
-            DrawCircleV(getPosicion(gusano,i), (getRadio(gusano))+2, DARKGRAY);
-            DrawCircleV(getPosicion(gusano,i), getRadio(gusano), getColor(gusano));
-        }
+        if(IsKeyPressed(KEY_SPACE)|| IsKeyPressed(KEY_ENTER))
+            play=1;
 
-        //CUERPO GUSANO FAKE
-        for(int j=0;j<nGusanos;j++){
-            for(int i=0;i<getSize(fGusano[j]);i++){
-                DrawCircleV(getPosicion(fGusano[j],i), (getRadio(fGusano[j]))+2, DARKGRAY);
-                DrawCircleV(getPosicion(fGusano[j],i), getRadio(fGusano[j]), getColor(fGusano[j]));
-            }
-        }
+       if(play)
+       {
+           ClearBackground(RAYWHITE);
+           BeginMode2D(camera);
+
+           //CIRCULO DE JUEGO
+           DrawCircle(0, 0, worldSize+20, LIGHTGRAY);
+
+           //CUERPO GUSANO
+           for(int i=0;i<getSize(gusano);i++){
+               DrawCircleV(getPosicion(gusano,i), (getRadio(gusano))+2, DARKGRAY);
+               DrawCircleV(getPosicion(gusano,i), getRadio(gusano), getColor(gusano));
+           }
+
+           //CUERPO GUSANO FAKE
+           for(int j=0;j<nGusanos;j++){
+               for(int i=0;i<getSize(fGusano[j]);i++){
+                   DrawCircleV(getPosicion(fGusano[j],i), (getRadio(fGusano[j]))+2, DARKGRAY);
+                   DrawCircleV(getPosicion(fGusano[j],i), getRadio(fGusano[j]), getColor(fGusano[j]));
+               }
+           }
 
 
-        //COMIDA
-        checkCollisionFood(gusano, posiciones, fGusano,fGusanoPos,randomCirclesTodo,randomCirclesCentro,foods);
+           //COMIDA
+           checkCollisionFood(gusano, posiciones, fGusano,fGusanoPos,randomCirclesTodo,randomCirclesCentro,foods);
 
-        gameplayer(gusano);
+           gameplayer(gusano);
 
-        EndMode2D();
+           EndMode2D();
 
-        gameState(gusano);
+           gameState(gusano);
+
+       }
+
 
         EndDrawing();
         //----------------------------------------------------------------------------------
