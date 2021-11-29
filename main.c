@@ -79,7 +79,8 @@
             BeginDrawing();
 
 
-            starScreen(screenWidth,&letter, player);
+            if(play==0)
+                starScreen(screenWidth,&letter, player);
 
             if(IsKeyPressed(KEY_SPACE)|| IsKeyPressed(KEY_ENTER))
                 play=1;

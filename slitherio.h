@@ -8,7 +8,7 @@
 
 #define valorInicial 10
 #define nFood 100
-#define nGusanos 10
+#define nGusanos 5
 #define worldSize 1000
 #define speed 5
 #define screenWidth 1800
