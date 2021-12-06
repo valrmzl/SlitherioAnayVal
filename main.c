@@ -35,7 +35,7 @@ int main() {
     initCamera(&camera,gusano);
 
 
-    //TARGET HACIA DONDE SE MUEVEN FAKE GUSANOS
+    //TARGET HACIA DONDE SE MUEVEN FAKE GUSANOS, DENTRO DE LOS LIMITES DEL MUDNO
     Vector2 fakeGusanoTarget[nGusanos];
     for(int i=0;i<nGusanos;i++){
         fakeGusanoTarget[i]=getRandomPosTodo();
@@ -44,9 +44,6 @@ int main() {
     // Main game loop
     while (!WindowShouldClose())
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
 
         //UPDATE GUSANO
         updateListaP(posiciones, mouseMovement(GetMousePosition(),posiciones));
@@ -63,25 +60,7 @@ int main() {
         checkCollisionGusanos(gusano, posiciones, fGusano, fGusanoPos,&play,&countTrail,randomCirclesTodo);
 
         checkBoundaries(posiciones,gusano,&play);
-
-        // Camera target follows player
         camera.target = (Vector2){getPosicionGusano(gusano,1).x , getPosicionGusano(gusano,1).y};
-
-        /* NOTA: vamos a cambiar el zoom conforme el gusano crezca
-        // Camera zoom controls
-        camera.zoom += ((float)GetMouseWheelMove()*0.05f);
-        if (camera.zoom > 3.0f) camera.zoom = 3.0f;
-        else if (camera.zoom < 0.1f) camera.zoom = 0.1f;
-        // Camera reset (zoom and rotation)
-        if (IsKeyPressed(KEY_R))
-        {
-            camera.zoom = 1.0f;
-            camera.rotation = 0.0f;
-        }*/
-
-
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
 
         if(play==0)
@@ -94,7 +73,7 @@ int main() {
             ClearBackground(BLACK);
             BeginMode2D(camera);
 
-            //CIRCULO DE JUEGO
+            //CIRCULO/MAPA DE JUEGO
             DrawCircle(0, 0, worldSize + 70,RED);
             DrawCircle(0, 0, worldSize+20, LIGHTGRAY);
 
@@ -118,12 +97,10 @@ int main() {
             gameState(gusano);
         }
         EndDrawing();
-        //----------------------------------------------------------------------------------
+
     }
-    // De-Initialization
-    //FREE()--¿?
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+
+    CloseWindow();
+
     return 0;
 }

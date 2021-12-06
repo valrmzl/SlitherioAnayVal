@@ -22,17 +22,17 @@
 
 typedef struct bloque Bloque;
 
-Bloque* getBloque(List* list,int index);
-Color getColor(List* gusano);
-float getRadio(List* gusano);
-void setRadio(List* gusano, float newValue);
-void changeRadio(List *gusano);
+//Bloque* getBloque(List* list,int index);
+//Color getColor(List* gusano);
+//float getRadio(List* gusano);
+//void setRadio(List* gusano, float newValue);
+//void changeRadio(List *gusano);
 Vector2 getPosicionGusano(List* gusano,int index);
-Vector2 getPosicion(List* gusano,int index);
-void setPosicion(List* gusano, int index, Vector2 pos);
-void setPosicionGusano(List* posiciones, int index,Vector2 pos);
-Bloque *newBloque(Color color,int n,float radio);
-Vector2 *newPos(float x, float y);
+//Vector2 getPosicion(List* gusano,int index);
+//void setPosicion(List* gusano, int index, Vector2 pos);
+//void setPosicionGusano(List* posiciones, int index,Vector2 pos);
+//Bloque *newBloque(Color color,int n,float radio);
+//Vector2 *newPos(float x, float y);
 void inicializarBloque(Vector2 initialPositions[valorInicial], List *gusano);
 void inicializarPosiciones(List *posiciones,Vector2 initialPositions[valorInicial],Vector2 pInicial);
 void inicializarFakeGusanos(List *fakeGusanos[],List *posicionesFakeGusanos[],Vector2 randomPos[nGusanos][valorInicial]);
@@ -53,9 +53,9 @@ void checkCollisionFood(List *gusano, List *posiciones, List* fakeGusanos[], Lis
 void inicializarFood(Color foods[],Vector2 positionsCentro[], Vector2 positionsAll[],int n);
 
 Vector2 getRandomPosTodo();
-Vector2 getRandomPosAfueras();
-Vector2 getRandomPosCentro();
-Color getRandomColor();
+//Vector2 getRandomPosAfueras();
+//Vector2 getRandomPosCentro();
+//Color getRandomColor();
 void initCamera(Camera2D *camera, List *gusano);
 void starScreen(int sw,int *letterCount,char player[]);
 void drawGusano(List *gusano);
