@@ -2,6 +2,7 @@
 // Created by luax2 on 26/11/2021.
 //
 #include "raylib.h"
+
 #ifndef SLITHERIO_LISTS_H
 #define SLITHERIO_LISTS_H
 typedef struct node Node;
