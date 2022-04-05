@@ -3,14 +3,12 @@
 #include "lists.h"
 
 int main() {
+    //INICIALIZACIÓN DE VARIABLES, LISTAS Y ARREGLOS
     int play=0;
     int letter=0;
     int countTrail=0;
+    int flags[nGusanos]={0};
     char player[maxInputChars]="\0";
-    InitWindow(screenWidth, screenHeight, "Sliter.io -- Ana y Valeria");
-
-    SetTargetFPS(30);
-    //--------------------------------------------------------------------------------------
 
     Color foodsColores[nFood];
     Vector2 randomCirclesCentro[nFood];//centro
@@ -28,43 +26,53 @@ int main() {
     Vector2 randomPosF[nGusanos][valorInicial];
     List* fGusano[nGusanos];
     List* fGusanoPos[nGusanos];
-    int randomSizes[nGusanos];
     inicializarFakeGusanos(fGusano,fGusanoPos,randomPosF);
 
     Camera2D camera;
     initCamera(&camera,gusano);
 
 
-    //TARGET HACIA DONDE SE MUEVEN FAKE GUSANOS, DENTRO DE LOS LIMITES DEL MUDNO
+    //TARGET - HACIA DONDE SE MUEVEN FAKE GUSANOS
     Vector2 fakeGusanoTarget[nGusanos];
     for(int i=0;i<nGusanos;i++){
         fakeGusanoTarget[i]=getRandomPosTodo();
     }
 
+    //TITULO DE VENTANA
+    InitWindow(screenWidth, screenHeight, "Sliter.io -- Ana y Valeria");
+
+    SetTargetFPS(30);
+
     // Main game loop
     while (!WindowShouldClose())
     {
-
         //UPDATE GUSANO
         updateListaP(posiciones, mouseMovement(GetMousePosition(),posiciones));
         updateGusano(gusano,posiciones);
 
-        //UPDATE FAKE GUSANOS
+        //BEHAVIOR FAKE GUSANOS
         for(int i =0; i<nGusanos;i++){
+            //MOVIMIENTO
             updateListaP(fGusanoPos[i],updatePosFakeGusano(fGusanoPos[i],&fakeGusanoTarget[i]));
             updateGusano(fGusano[i],fGusanoPos[i]);
+            //COMIDA
             fakeGusanoFollowFood(fGusano[i], randomCirclesTodo, randomCirclesCentro,&fakeGusanoTarget[i]);
-            fakeGusanoAvoidGusanos(fGusano,fGusano[i],&fakeGusanoTarget[i], i,gusano);
+            //EVITAR OTROS GUSANOS
+            fakeGusanoAvoidGusanos(fGusano,fGusano[i],&fakeGusanoTarget[i], i,gusano,&flags[i]);
         }
 
-        checkCollisionGusanos(gusano, posiciones, fGusano, fGusanoPos,&play,&countTrail,randomCirclesTodo,foodsColores);
+        checkCollisionGusanos(gusano, posiciones, fGusano, fGusanoPos,&play,&countTrail,randomCirclesTodo);
 
         checkBoundaries(posiciones,gusano,&play);
+
+        // Camera target follows player
         camera.target = (Vector2){getPosicionGusano(gusano,1).x , getPosicionGusano(gusano,1).y};
+
         BeginDrawing();
 
-        if(play==0)
+        if(play==0)//PANTALLA INICIAL
             starScreen(screenWidth,&letter, player);
+
 
         if(IsKeyPressed(KEY_SPACE)|| IsKeyPressed(KEY_ENTER))
             play=1;
@@ -73,7 +81,7 @@ int main() {
             ClearBackground(BLACK);
             BeginMode2D(camera);
 
-            //CIRCULO/MAPA DE JUEGO
+            //CIRCULO DE JUEGO/MUNDO
             DrawCircle(0, 0, worldSize + 70,RED);
             DrawCircle(0, 0, worldSize+20, LIGHTGRAY);
 
@@ -97,10 +105,9 @@ int main() {
             gameState(gusano);
         }
         EndDrawing();
-
+        //----------------------------------------------------------------------------------
     }
 
     CloseWindow();
-
     return 0;
 }
